@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>pasang banner iklan</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+  <div class="container mt-5">
+    <h1>Data Banner Iklan</h1>
+    <p>bantuan email : <a href="mailto:bobwatcherx@gmail.com">bobwatcherx@gmail.com</a>
+</p>
+    <div class="row" id="bannerList">
+      <!-- Data akan ditampilkan di sini -->
+    </div>
+  </div>
+
+  <!-- Modal for Edit Form -->
+  <div class="modal" id="editModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Informasi banner</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Edit Form Goes Here -->
+          <form id="editForm">
+            <div class="form-group">
+              <label for="img_banner">Image Banner</label>
+              <input type="text" class="form-control" id="img_banner" placeholder="Enter Image Banner URL">
+            </div>
+            <div class="form-group">
+              <label for="bannerType">Banner Type</label>
+              <input type="text" disabled class="form-control" id="bannerType" placeholder="Enter Banner Type">
+            </div>
+            <div class="form-group">
+              <label for="expired">Expired</label>
+              <input type="text" class="form-control" disabled id="expired" placeholder="Enter Expired">
+            </div>
+            <div class="form-group">
+              <label for="web_address">untuk WEB</label>
+              <input type="text" class="form-control" disabled id="web_address" placeholder="Enter Expired">
+            </div>
+            <div class="form-group">
+              <label for="size_banner">Banner ukuran</label>
+              <input type="text" class="form-control" disabled id="size_banner" placeholder="Enter Expired">
+            </div>
+            <div class="form-group">
+              <label for="passwd"> GANTI Password</label>
+              <input type="password" class="form-control" id="passwd" placeholder="Enter Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js (optional) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Function to populate the form with existing data
+    function populateEditForm(id, bannerType, expired, passwd, img_banner,size_banner,web_address) {
+      document.getElementById('img_banner').value = img_banner;
+      document.getElementById('bannerType').value = bannerType;
+      document.getElementById('expired').value = expired;
+      document.getElementById('passwd').value = passwd;
+      document.getElementById('size_banner').value = size_banner;
+      document.getElementById('web_address').value = web_address;
+      // ... add more fields as needed
+    }
+let selectedItem;
+
+    // Fetch data from the provided URL
+    fetch('https://poophdpocket.pockethost.io/api/collections/banner_iklan/records')
+      .then(response => response.json())
+      .then(data => {
+        // Store the data for later use
+        const bannerData = data;
+
+        // Iterate over the items and build the list
+        const bannerList = document.getElementById('bannerList');
+
+        bannerData.items.forEach(item => {
+          const colDiv = document.createElement('div');
+          colDiv.className = 'col-md-4 mb-4';
+
+          const listItem = document.createElement('div');
+          listItem.className = 'list-group-item';
+
+          const img = document.createElement('img');
+          img.src = item.img_banner;
+          img.alt = 'Banner Image';
+          img.className = 'img-fluid';
+
+          const bannerInfo = document.createElement('div');
+          bannerInfo.innerHTML = `<strong>ID:</strong> ${item.id}<br>
+                                  
+                                  <strong>Banner size:</strong> ${item.size_banner}<br>
+                                  <strong>Created:</strong> ${item.created}<br>
+                                  <strong>Updated:</strong> ${item.updated}<br>
+                                  <strong>Type:</strong> ${item.banner_type}<br>
+                                  <strong>Expired:</strong> ${item.expired}<br>
+                                  <strong>WEB:</strong> ${item.web_address}<br>
+                                  `;
+
+          // Add an "Edit" button to each banner item
+          const editButton = document.createElement('button');
+          editButton.textContent = 'Edit';
+          editButton.classList.add('btn', 'btn-primary', 'edit-btn');
+          editButton.dataset.itemId = item.id;
+
+          // Append elements to the list item
+          listItem.appendChild(img);
+          listItem.appendChild(bannerInfo);
+          listItem.appendChild(editButton);
+
+          // Append elements to the column div
+          colDiv.appendChild(listItem);
+          bannerList.appendChild(colDiv);
+        });
+
+        // Add event listener for the edit button
+        document.getElementById('bannerList').addEventListener('click', function (event) {
+          if (event.target.tagName === 'BUTTON' && event.target.classList.contains('edit-btn')) {
+            const itemId = event.target.dataset.itemId;
+            selectedItem = bannerData.items.find(item => item.id === itemId);
+
+            // Populate the edit form with existing data
+            populateEditForm(selectedItem.id, selectedItem.banner_type, selectedItem.expired, selectedItem.passwd, selectedItem.img_banner,selectedItem.size_banner,selectedItem.web_address);
+
+            // Show the modal
+            $('#editModal').modal('show');
+          }
+        });
+
+// Add event listener for the edit form submission
+document.getElementById('editForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  // Get the edited data from the form
+  const editedData = {
+    "id": selectedItem.id,
+    "img_banner": document.getElementById('img_banner').value,
+    "banner_type": document.getElementById('bannerType').value,
+    "expired": document.getElementById('expired').value,
+    "passwd": document.getElementById('passwd').value,
+    "size_banner": document.getElementById('size_banner').value,
+    "web_address": document.getElementById('web_address').value
+    // ... add more fields as needed
+  };
+
+  fetch(`https://poophdpocket.pockethost.io/api/collections/banner_iklan/records/${editedData.id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(editedData),
+  })
+    .then(response => {
+      if (response.ok) {
+        // Close the modal
+        $('#editModal').modal('hide');
+        // Show success alert
+        alert('Data berhasil di update . Refresh halaman ');
+        // You can also update the UI to reflect the changes if needed
+      } else {
+        throw new Error('Failed to edit data');
+      }
+    })
+    .catch(error => console.error('Error editing data:', error));
+});
+
+}); // Add this line at the end to close the fetch .then block
+  </script>
+</body>
+</html>
+
