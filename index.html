@@ -32,8 +32,12 @@
           <!-- Edit Form Goes Here -->
           <form id="editForm">
             <div class="form-group">
-              <label for="img_banner">Image Banner</label>
+              <label for="img_banner">Image Banner GIF</label>
               <input type="text" class="form-control" id="img_banner" placeholder="Enter Image Banner URL">
+            </div>
+            <div class="form-group">
+              <label for="img_banner">Link Banner</label>
+              <input type="text" class="form-control" id="url_tujuan" placeholder="Enter Image Banner URL">
             </div>
             <div class="form-group">
               <label for="bannerType">Banner Type</label>
@@ -69,13 +73,14 @@
 
   <script>
     // Function to populate the form with existing data
-    function populateEditForm(id, bannerType, expired, passwd, img_banner,size_banner,web_address) {
+    function populateEditForm(id, bannerType, expired, passwd, img_banner,size_banner,web_address,url_tujuan) {
       document.getElementById('img_banner').value = img_banner;
       document.getElementById('bannerType').value = bannerType;
       document.getElementById('expired').value = expired;
       document.getElementById('passwd').value = passwd;
       document.getElementById('size_banner').value = size_banner;
       document.getElementById('web_address').value = web_address;
+      document.getElementById('url_tujuan').value = url_tujuan;
       // ... add more fields as needed
     }
 let selectedItem;
@@ -97,15 +102,16 @@ let selectedItem;
           const listItem = document.createElement('div');
           listItem.className = 'list-group-item';
 
-          const img = document.createElement('img');
-          img.src = item.img_banner;
-          img.alt = 'Banner Image';
-          img.className = 'img-fluid';
+          const embed = document.createElement('embed');
+          embed.src = item.img_banner;
+          embed.alt = 'Banner Image GIF';
+          embed.style.width = "100%"
 
           const bannerInfo = document.createElement('div');
           bannerInfo.innerHTML = `<strong>ID:</strong> ${item.id}<br>
                                   
                                   <strong>Banner size:</strong> ${item.size_banner}<br>
+                                  <strong>Banner LINK:</strong> ${item.url_tujuan}<br>
                                   <strong>Created:</strong> ${item.created}<br>
                                   <strong>Updated:</strong> ${item.updated}<br>
                                   <strong>Type:</strong> ${item.banner_type}<br>
@@ -120,7 +126,7 @@ let selectedItem;
           editButton.dataset.itemId = item.id;
 
           // Append elements to the list item
-          listItem.appendChild(img);
+          listItem.appendChild(embed);
           listItem.appendChild(bannerInfo);
           listItem.appendChild(editButton);
 
@@ -136,7 +142,7 @@ let selectedItem;
             selectedItem = bannerData.items.find(item => item.id === itemId);
 
             // Populate the edit form with existing data
-            populateEditForm(selectedItem.id, selectedItem.banner_type, selectedItem.expired, selectedItem.passwd, selectedItem.img_banner,selectedItem.size_banner,selectedItem.web_address);
+            populateEditForm(selectedItem.id, selectedItem.banner_type, selectedItem.expired, selectedItem.passwd, selectedItem.img_banner,selectedItem.size_banner,selectedItem.web_address,selectedItem.url_tujuan);
 
             // Show the modal
             $('#editModal').modal('show');
@@ -155,7 +161,8 @@ document.getElementById('editForm').addEventListener('submit', function (event) 
     "expired": document.getElementById('expired').value,
     "passwd": document.getElementById('passwd').value,
     "size_banner": document.getElementById('size_banner').value,
-    "web_address": document.getElementById('web_address').value
+    "web_address": document.getElementById('web_address').value,
+    "url_tujuan": document.getElementById('url_tujuan').value
     // ... add more fields as needed
   };
 
